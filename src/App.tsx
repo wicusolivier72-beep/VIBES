@@ -21,12 +21,11 @@ interface ReferenceContact {
   context: string
 }
 
-// Navigation Items
+// Navigation Items (RMR removed)
 const navigationItems = [
   { id: 'hero', label: 'Overview' },
   { id: 'competencies', label: 'Competencies & Coursework' },
   { id: 'timeline-references', label: 'Education & References' },
-  { id: 'rmr-calculator', label: 'RMR Calculator' },
 ]
 
 // Competencies & Coursework Data
@@ -106,13 +105,6 @@ export default function App() {
   // Interactive UI state
   const [expandedCourseworkIdx, setExpandedCourseworkIdx] = useState<number | null>(0)
   const [expandedReferenceIdx, setExpandedReferenceIdx] = useState<number | null>(null)
-  
-  // RMR Calculator State
-  const [ucsStrength, setUcsStrength] = useState<number>(12) // Default: 100-250 MPa (Rating: 12)
-  const [rqdValue, setRqdValue] = useState<number>(75)      // Default: 75% RQD
-  const [disspacing, setDisspacing] = useState<number>(15)    // Default: 0.6-2m (Rating: 15)
-  const [condition, setCondition] = useState<number>(22)      // Default: Slightly Rough (Rating: 22)
-  const [groundwater, setGroundwater] = useState<number>(10)  // Default: Damp (Rating: 10)
 
   // Scroll spy setup
   useEffect(() => {
@@ -146,30 +138,6 @@ export default function App() {
       el.scrollIntoView({ behavior: 'smooth' })
     }
   }
-
-  // Calculate RQD rating rating based on the prompt's rules:
-  // >90% [20], 75-90% [17], 50-75% [13], 25-50% [8], <25% [3]
-  const getRqdRating = (val: number): number => {
-    if (val > 90) return 20
-    if (val >= 75) return 17
-    if (val >= 50) return 13
-    if (val >= 25) return 8
-    return 3
-  }
-
-  const rqdRating = getRqdRating(rqdValue)
-  const totalRmrScore = ucsStrength + rqdRating + disspacing + condition + groundwater
-
-  // Rock Class descriptions
-  const getRockClassification = (score: number) => {
-    if (score >= 81) return { class: 'Class I', text: 'Very Good Rock', color: 'bg-emerald-50 text-emerald-800 border-emerald-200' }
-    if (score >= 61) return { class: 'Class II', text: 'Good Rock', color: 'bg-teal-50 text-teal-800 border-teal-200' }
-    if (score >= 41) return { class: 'Class III', text: 'Fair Rock', color: 'bg-amber-50 text-amber-800 border-amber-200' }
-    if (score >= 21) return { class: 'Class IV', text: 'Poor Rock', color: 'bg-orange-50 text-orange-800 border-orange-200' }
-    return { class: 'Class V', text: 'Very Poor Rock', color: 'bg-red-50 text-red-800 border-red-200' }
-  }
-
-  const classification = getRockClassification(totalRmrScore)
 
   const handleDownloadCV = () => {
     alert("Simulating PDF download: Jacobus_Lodewicus_Wicus_Olivier_Geological_CV.pdf")
@@ -274,25 +242,58 @@ export default function App() {
           
           <div className="relative z-10 space-y-6">
             
-            {/* Top row: Badges and Details */}
-            <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 pb-5">
-              <div className="space-y-1">
-                <span className="text-[10px] font-mono font-bold text-[#1E3A8A] uppercase tracking-widest block">
-                  CANDIDATE DOSSIER
-                </span>
-                <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-950 tracking-tight">
-                  Jacobus Lodewicus (Wicus) Olivier
-                </h1>
-                <h2 className="text-base sm:text-lg font-bold text-slate-600 font-mono">
-                  Engineering & Environmental Geology Student | University of Pretoria
-                </h2>
-              </div>
+            {/* Top row: Photo and Details Split Grid */}
+            <div className="flex flex-col md:flex-row items-center md:items-start gap-8 border-b border-slate-100 pb-6">
               
-              <div className="bg-slate-50 border border-slate-200 rounded p-3 text-xs font-mono space-y-1 text-slate-600">
-                <div><span className="text-slate-400 font-bold">DRIVERS:</span> Code B (Own Transport)</div>
-                <div><span className="text-slate-400 font-bold">LOCATION:</span> Pretoria, South Africa</div>
-                <div><span className="text-slate-400 font-bold">GRADUATION:</span> Nov 2027 (Expected)</div>
+              {/* Photo Column with Custom Geological Scale Styling */}
+              <div className="shrink-0 relative">
+                <img
+                  src="/profile.jpg"
+                  alt="Wicus Olivier"
+                  className="w-48 h-60 object-cover rounded-lg border-2 border-slate-200 shadow-sm"
+                />
+                {/* Scale Bar Decorator */}
+                <div className="mt-2.5 font-mono text-[9px] text-slate-400 text-center flex justify-between px-1">
+                  <span>0 mm</span>
+                  <span className="border-b border-slate-300 flex-1 mx-2.5 relative top-1.5 border-dashed" />
+                  <span>150 mm</span>
+                </div>
               </div>
+
+              {/* Details Column */}
+              <div className="flex-1 space-y-4 text-center md:text-left">
+                <div className="space-y-1">
+                  <span className="text-[10px] font-mono font-bold text-[#1E3A8A] uppercase tracking-widest block">
+                    CANDIDATE DOSSIER
+                  </span>
+                  <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-950 tracking-tight leading-tight">
+                    Jacobus Lodewicus (Wicus) Olivier
+                  </h1>
+                  <h2 className="text-base sm:text-lg font-bold text-slate-600 font-mono">
+                    Engineering & Environmental Geology Student | University of Pretoria
+                  </h2>
+                </div>
+
+                <div className="inline-grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 bg-slate-50 border border-slate-200 rounded p-4 text-xs font-mono text-slate-600 text-left">
+                  <div>
+                    <span className="text-slate-400 font-bold mr-1">DRIVERS:</span>
+                    <span>Code B (Own Transport)</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 font-bold mr-1">LOCATION:</span>
+                    <span>Pretoria, South Africa</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 font-bold mr-1">GRADUATION:</span>
+                    <span>Nov 2027 (Expected)</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 font-bold mr-1">CONTACT:</span>
+                    <span>083 321 8026</span>
+                  </div>
+                </div>
+              </div>
+
             </div>
 
             {/* Profile Statement */}
@@ -569,218 +570,6 @@ export default function App() {
 
       </section>
 
-      {/* Rock Mass Rating (RMR) Calculator */}
-      <section id="rmr-calculator" className="py-16 bg-slate-100 border-t border-b border-slate-200 relative z-10">
-        <div className="max-w-6xl mx-auto px-6">
-          
-          {/* Header */}
-          <div className="mb-10 text-left">
-            <span className="text-xs font-mono font-bold text-[#1E3A8A] uppercase tracking-wider">
-              04. Geomechanical Field Tool
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950 mt-1">
-              Rock Mass Rating (RMR) Calculator
-            </h2>
-            <p className="text-slate-500 text-sm max-w-xl mt-1 font-mono">
-              Evaluates geomechanical stability using Bieniawski (1989) classifications. Adjust geological variables below to compute ratings dynamically.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            
-            {/* Inputs Panel (Left) */}
-            <div className="lg:col-span-7 bg-white border border-slate-200 rounded-lg p-6 sm:p-8 space-y-6 shadow-2xs">
-              <h3 className="text-lg font-bold text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2">
-                <span className="w-1.5 h-6 bg-[#1E3A8A] rounded-full" />
-                Parameters Input Sheet
-              </h3>
-
-              {/* 1. UCS Strength */}
-              <div className="space-y-2">
-                <label className="flex justify-between items-center text-xs font-mono font-bold text-slate-700">
-                  <span>1. UCS Strength of Intact Rock</span>
-                  <span className="text-[#1E3A8A] font-mono">Rating: {ucsStrength}</span>
-                </label>
-                <select
-                  value={ucsStrength}
-                  onChange={(e) => setUcsStrength(Number(e.target.value))}
-                  className="w-full px-3 py-2 border border-slate-200 hover:border-slate-300 rounded font-mono text-sm outline-none bg-slate-50 focus:border-[#1E3A8A] focus:ring-1 focus:ring-[#1E3A8A] transition-colors"
-                >
-                  <option value={15}>&gt;250 MPa [Rating: 15]</option>
-                  <option value={12}>100 - 250 MPa [Rating: 12]</option>
-                  <option value={7}>50 - 100 MPa [Rating: 7]</option>
-                  <option value={4}>25 - 50 MPa [Rating: 4]</option>
-                </select>
-              </div>
-
-              {/* 2. RQD Slider */}
-              <div className="space-y-2">
-                <div className="flex justify-between items-center text-xs font-mono font-bold text-slate-700">
-                  <span>2. RQD (Rock Quality Designation)</span>
-                  <span className="text-[#1E3A8A] font-mono">
-                    RQD: {rqdValue}% &rarr; Rating: {rqdRating}
-                  </span>
-                </div>
-                <input
-                  type="range"
-                  min="0"
-                  max="100"
-                  value={rqdValue}
-                  onChange={(e) => setRqdValue(Number(e.target.value))}
-                  className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#1E3A8A]"
-                />
-                <div className="flex justify-between text-[9px] font-mono text-slate-400 px-0.5">
-                  <span>Very Poor (&lt;25%)</span>
-                  <span>Poor (25-50%)</span>
-                  <span>Fair (50-75%)</span>
-                  <span>Good (75-90%)</span>
-                  <span>Very Good (&gt;90%)</span>
-                </div>
-              </div>
-
-              {/* 3. Discontinuity Spacing */}
-              <div className="space-y-2">
-                <label className="flex justify-between items-center text-xs font-mono font-bold text-slate-700">
-                  <span>3. Discontinuity Spacing</span>
-                  <span className="text-[#1E3A8A] font-mono">Rating: {disspacing}</span>
-                </label>
-                <select
-                  value={disspacing}
-                  onChange={(e) => setDisspacing(Number(e.target.value))}
-                  className="w-full px-3 py-2 border border-slate-200 hover:border-slate-300 rounded font-mono text-sm outline-none bg-slate-50 focus:border-[#1E3A8A] focus:ring-1 focus:ring-[#1E3A8A] transition-colors"
-                >
-                  <option value={20}>&gt;2 m [Rating: 20]</option>
-                  <option value={15}>0.6 - 2 m [Rating: 15]</option>
-                  <option value={10}>200 - 600 mm [Rating: 10]</option>
-                  <option value={8}>60 - 200 mm [Rating: 8]</option>
-                </select>
-              </div>
-
-              {/* 4. Condition of Discontinuities */}
-              <div className="space-y-2">
-                <label className="flex justify-between items-center text-xs font-mono font-bold text-slate-700">
-                  <span>4. Condition of Discontinuities</span>
-                  <span className="text-[#1E3A8A] font-mono">Rating: {condition}</span>
-                </label>
-                <select
-                  value={condition}
-                  onChange={(e) => setCondition(Number(e.target.value))}
-                  className="w-full px-3 py-2 border border-slate-200 hover:border-slate-300 rounded font-mono text-sm outline-none bg-slate-50 focus:border-[#1E3A8A] focus:ring-1 focus:ring-[#1E3A8A] transition-colors"
-                >
-                  <option value={30}>Very Rough, unweathered, tightly closed [Rating: 30]</option>
-                  <option value={22}>Slightly Rough, apertures &lt;1mm, weathered [Rating: 22]</option>
-                  <option value={12}>Smooth joints, apertures 1-5mm [Rating: 12]</option>
-                </select>
-              </div>
-
-              {/* 5. Groundwater */}
-              <div className="space-y-2">
-                <label className="flex justify-between items-center text-xs font-mono font-bold text-slate-700">
-                  <span>5. Groundwater Conditions</span>
-                  <span className="text-[#1E3A8A] font-mono">Rating: {groundwater}</span>
-                </label>
-                <select
-                  value={groundwater}
-                  onChange={(e) => setGroundwater(Number(e.target.value))}
-                  className="w-full px-3 py-2 border border-slate-200 hover:border-slate-300 rounded font-mono text-sm outline-none bg-slate-50 focus:border-[#1E3A8A] focus:ring-1 focus:ring-[#1E3A8A] transition-colors"
-                >
-                  <option value={15}>Completely Dry [Rating: 15]</option>
-                  <option value={10}>Damp (minor inflows) [Rating: 10]</option>
-                  <option value={7}>Wet (joint pressure) [Rating: 7]</option>
-                  <option value={0}>Flowing [Rating: 0]</option>
-                </select>
-              </div>
-
-            </div>
-
-            {/* Output Display Panel (Right) */}
-            <div className="lg:col-span-5 bg-white border border-slate-200 rounded-lg p-6 sm:p-8 space-y-6 shadow-2xs h-full flex flex-col justify-between">
-              
-              <div className="space-y-6">
-                <h3 className="text-lg font-bold text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2">
-                  <span className="w-1.5 h-6 bg-[#1E3A8A] rounded-full" />
-                  Calculated Results
-                </h3>
-
-                {/* Score badge */}
-                <div className="text-center py-6 bg-slate-50 border border-slate-200 rounded-lg space-y-1">
-                  <span className="block text-[11px] font-mono font-bold text-slate-400 uppercase tracking-widest">
-                    TOTAL RMR SCORE
-                  </span>
-                  <span className="block text-6xl font-extrabold text-[#1E3A8A]">
-                    {totalRmrScore}
-                  </span>
-                  <span className="block text-xs font-mono text-slate-500">
-                    out of 100 points
-                  </span>
-                </div>
-
-                {/* Classification badge */}
-                <div className={`p-4 border rounded-lg text-center space-y-1 transition-colors duration-200 ${classification.color}`}>
-                  <span className="block text-xs font-mono font-bold uppercase tracking-widest">
-                    ROCK MASS CLASSIFICATION
-                  </span>
-                  <span className="block text-xl font-bold font-mono">
-                    {classification.class}
-                  </span>
-                  <span className="block text-sm font-semibold">
-                    ({classification.text})
-                  </span>
-                </div>
-              </div>
-
-              {/* RMR Reference Table */}
-              <div className="pt-6 border-t border-slate-100 space-y-3 mt-6">
-                <span className="block text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest text-left">
-                  Bieniawski Reference Table
-                </span>
-                <div className="overflow-x-auto text-[10px] font-mono text-slate-500">
-                  <table className="w-full text-left border-collapse">
-                    <thead>
-                      <tr className="border-b border-slate-200 text-slate-800">
-                        <th className="pb-1.5 font-bold">RMR Range</th>
-                        <th className="pb-1.5 font-bold">Class</th>
-                        <th className="pb-1.5 font-bold">Quality</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr className={totalRmrScore >= 81 ? 'text-[#1E3A8A] font-bold bg-[#1E3A8A]/5' : ''}>
-                        <td className="py-1">81 – 100</td>
-                        <td>Class I</td>
-                        <td>Very Good Rock</td>
-                      </tr>
-                      <tr className={(totalRmrScore >= 61 && totalRmrScore <= 80) ? 'text-[#1E3A8A] font-bold bg-[#1E3A8A]/5' : ''}>
-                        <td className="py-1">61 – 80</td>
-                        <td>Class II</td>
-                        <td>Good Rock</td>
-                      </tr>
-                      <tr className={(totalRmrScore >= 41 && totalRmrScore <= 60) ? 'text-[#1E3A8A] font-bold bg-[#1E3A8A]/5' : ''}>
-                        <td className="py-1">41 – 60</td>
-                        <td>Class III</td>
-                        <td>Fair Rock</td>
-                      </tr>
-                      <tr className={(totalRmrScore >= 21 && totalRmrScore <= 40) ? 'text-[#1E3A8A] font-bold bg-[#1E3A8A]/5' : ''}>
-                        <td className="py-1">21 – 40</td>
-                        <td>Class IV</td>
-                        <td>Poor Rock</td>
-                      </tr>
-                      <tr className={totalRmrScore < 21 ? 'text-[#1E3A8A] font-bold bg-[#1E3A8A]/5' : ''}>
-                        <td className="py-1">&lt;21</td>
-                        <td>Class V</td>
-                        <td>Very Poor Rock</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-      </section>
-
       {/* Corporate Styled Footer */}
       <footer className="border-t border-slate-200 bg-white py-12 text-center text-xs text-slate-500 relative z-10">
         <div className="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-6">
@@ -803,9 +592,6 @@ export default function App() {
             </button>
             <button onClick={() => scrollToSection('timeline-references')} className="hover:text-slate-950 transition-colors cursor-pointer">
               Education & References
-            </button>
-            <button onClick={() => scrollToSection('rmr-calculator')} className="hover:text-slate-950 transition-colors cursor-pointer">
-              RMR Calculator
             </button>
           </div>
         </div>
