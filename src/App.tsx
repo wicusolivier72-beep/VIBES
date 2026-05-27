@@ -4,97 +4,121 @@ import { useState, useEffect } from 'react'
 interface CourseworkCategory {
   category: string
   items: string[]
+  hasWorkflow?: boolean
+  workflowSteps?: string[]
 }
 
-interface EducationMilestone {
+interface TimelineEvent {
   title: string
-  institution: string
+  subtitle: string
   period: string
-  details: string[]
+  category: 'experience' | 'education'
+  bullets: string[]
 }
 
-interface ReferenceContact {
+interface Reference {
   name: string
-  relationship: string
-  phone: string
-  email?: string
-  context: string
+  role: string
+  company: string
+  email: string
 }
 
-// Navigation Items (RMR removed)
+// Navigation Items
 const navigationItems = [
   { id: 'hero', label: 'Overview' },
-  { id: 'competencies', label: 'Competencies & Coursework' },
-  { id: 'timeline-references', label: 'Education & References' },
+  { id: 'timeline', label: 'Experience & Education' },
+  { id: 'skills', label: 'Skills & Tools' },
+  { id: 'rmr', label: 'RMR Calculator' },
+  { id: 'references', label: 'References' },
 ]
 
-// Competencies & Coursework Data
-const courseworkData: CourseworkCategory[] = [
+// Professional Timeline Data
+const timelineData: TimelineEvent[] = [
   {
-    category: 'Core Engineering Geology & Science',
-    items: [
-      'Introductory Geology (Lithology, mineralogy, structural fault systems)',
-      '1st Year Chemistry (General chemistry concepts, stoichiometry, molecular geometry)',
-      '2nd Year Chemistry (Organic chemistry, physical chemistry, thermodynamics)',
-      'Introductory Soil Science (Soil physical properties, soil profiling, soil horizons)',
-      'Biometry (Statistical methods, biological/geological data modeling, hypothesis testing)'
+    title: 'Student IT Lab Technician',
+    subtitle: 'Mining Industry Study Centre, University of Pretoria',
+    period: 'February 2026 - Present',
+    category: 'experience',
+    bullets: [
+      'Provide front-line technical support for undergraduate/postgraduate students and academic staff.',
+      'Diagnose and troubleshoot computer laboratory hardware, including PCs, printers, and screens.',
+      'Configure software applications, handle domain login assistance, and resolve local network connectivity issues.',
+      'Assist students with accessing academic portal resources and configuring specialized GIS processing environments.'
     ]
   },
   {
-    category: 'Technical & Tools',
-    items: [
-      'QGIS (Spatial vector and raster analysis, topological modeling)',
-      'Google Earth Engine (GEE) (Remote sensing imagery processing, multispectral band comparison)',
-      'Microsoft Office Suite (Advanced Word reports, Excel data models, PowerPoint presentations)',
-      'Geological Data Plotting (Visualizing stratigraphic columns, recovery rates)'
-    ]
-  },
-  {
-    category: 'Core Attributes & Professionalism',
-    items: [
-      'Analytical Problem-Solving (Systematic assessment of mechanical data and terrain contours)',
-      'Interdisciplinary Teamwork (Collaboration with research peers and lab teams)',
-      'Technical Communication (Writing detailed engineering geology logs and research abstracts)'
-    ]
-  }
-]
-
-// Education Track Data
-const educationData: EducationMilestone[] = [
-  {
-    title: 'BSc Engineering and Environmental Geology',
-    institution: 'University of Pretoria',
+    title: 'BSc in Engineering and Environmental Geology (Ongoing)',
+    subtitle: 'University of Pretoria',
     period: '2024 - Present (Expected Graduation: 2027)',
-    details: [
-      'Focusing on the interaction of engineering structures with the geological environment.',
-      'Completed courses in soil properties, mineral physics, and analytical chemistry.',
-      'Active participant in departmental field workshops and coordinate system georeferencing modules.'
+    category: 'education',
+    bullets: [
+      'Currently in 3rd year, developing a deep understanding of geological processes and engineering applications.',
+      'Relevant Coursework: Introductory Geology & Sedimentology, 1st & 2nd Year Chemistry, Introductory Soil Science, and Biometry.',
+      'Applying geological mapping techniques, soil classification models, and stereonet discontinuity analysis.'
     ]
   },
   {
     title: 'National Senior Certificate (Matric)',
-    institution: 'High School Graduation',
+    subtitle: 'High School Graduation',
     period: 'Class of 2023',
-    details: [
-      'Achieved Matric certification with strong performance in technical and spatial subjects.',
-      'Core academic focus areas: Physical Sciences, Mathematics, Geography, and Accounting.'
+    category: 'education',
+    bullets: [
+      'Graduated with strong results in logical and spatial sciences.',
+      'Core Subjects: Mathematics, Physical Sciences, Geography, and Accounting.'
     ]
   }
 ]
 
-// Reference Contacts
-const referencesData: ReferenceContact[] = [
+// Skills and Coursework Data
+const skillsCategories: CourseworkCategory[] = [
   {
-    name: 'Mr. Etienne Terblanche',
-    relationship: 'High School Teacher (Geography / Sciences)',
-    phone: '076 943 7413',
-    context: 'Academic supervisor throughout secondary schooling; can speak to core work ethic, geographical mapping foundation, and leadership attributes.'
+    category: 'Geospatial & Technical Software',
+    items: [
+      'QGIS (Vector mapping, spatial analysis, overlay zoning, raster calculations)',
+      'Google Earth Engine (GEE) (Scripting satellite datasets, temporal band comparisons, spectral analysis)',
+      'Geotechnical Logging Utilities (Parsing borehole depths, plotting stratigraphic columns)'
+    ],
+    hasWorkflow: true,
+    workflowSteps: [
+      'Query & filter Sentinel-2 multispectral surface reflectance datasets for target dates.',
+      'Apply cloud masking using QA bands to generate clear geographic composites.',
+      'Calculate Normalized Difference Vegetation Index (NDVI) mapping formulas: (B8 - B4) / (B8 + B4).',
+      'Classify land usage classes via supervised Random Forest model algorithms.',
+      'Export multi-temporal raster layers to QGIS for vector overlay mapping comparison.'
+    ]
   },
   {
-    name: 'Mr. Armand le Roux',
-    relationship: 'Chemistry Tutor (1-Year Duration)',
-    phone: '082 308 9238',
-    context: 'Guided through university general chemistry modules, reaction kinetics, and laboratory safety protocols; can verify technical problem-solving capabilities.'
+    category: 'Productivity Suite',
+    items: [
+      'Microsoft Word: Formatting dense technical engineering geology reports, abstracts, and logs.',
+      'Microsoft Excel: Building formulas, plotting lab test metrics (e.g. soil plasticity index charts).',
+      'Microsoft PowerPoint: Structuring professional slides for scientific geology findings.'
+    ]
+  },
+  {
+    category: 'Core Competencies',
+    items: [
+      'Analytical Problem-Solving (Connecting soil mechanics with engineering structure safety parameters)',
+      'Customer-Facing Support (Direct troubleshooting and clear communication in IT laboratory environments)',
+      'Hardware Diagnostics (Resolving workstation failures, memory errors, and hardware connectivity issues)',
+      'Time Management (Successfully balancing a rigorous 3rd-year BSc schedule with active IT support shifts)'
+    ]
+  }
+]
+
+// References Data
+const referencesData: Reference[] = [
+  {
+    name: 'Shelly van Heerden',
+    role: 'Previous Employer',
+    company: 'University of Pretoria',
+    email: 'shelly.vanheennden@up.ac.za'
+  },
+  {
+    name: 'Zamani Dubazana',
+    role: 'Previous Employer',
+    company: 'University of Pretoria',
+    email: 'zamani.dubazana@up.ac.za'
   }
 ]
 
@@ -102,9 +126,17 @@ export default function App() {
   const [activeSection, setActiveSection] = useState('hero')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   
-  // Interactive UI state
-  const [expandedCourseworkIdx, setExpandedCourseworkIdx] = useState<number | null>(0)
-  const [expandedReferenceIdx, setExpandedReferenceIdx] = useState<number | null>(null)
+  // Interactive UI State
+  const [activeTabIdx, setActiveTabIdx] = useState<number>(0)
+  const [showWorkflow, setShowWorkflow] = useState<boolean>(false)
+  const [activeTimelineIdx, setActiveTimelineIdx] = useState<number>(0)
+
+  // RMR Calculator State
+  const [ucsStrength, setUcsStrength] = useState<number>(12) // Default: 100-250 MPa (Rating: 12)
+  const [rqdValue, setRqdValue] = useState<number>(75)      // Default: 75% RQD
+  const [disspacing, setDisspacing] = useState<number>(15)    // Default: 0.6-2m (Rating: 15)
+  const [condition, setCondition] = useState<number>(22)      // Default: Slightly Rough (Rating: 22)
+  const [groundwater, setGroundwater] = useState<number>(10)  // Default: Damp (Rating: 10)
 
   // Scroll spy setup
   useEffect(() => {
@@ -118,7 +150,7 @@ export default function App() {
 
     const observer = new IntersectionObserver(handleIntersection, {
       root: null,
-      rootMargin: '-40% 0px -40% 0px',
+      rootMargin: '-45% 0px -45% 0px',
       threshold: 0,
     })
 
@@ -139,6 +171,30 @@ export default function App() {
     }
   }
 
+  // Calculate RQD rating based on the prompt's rules:
+  // >90% [20], 75-90% [17], 50-75% [13], 25-50% [8], <25% [3]
+  const getRqdRating = (val: number): number => {
+    if (val > 90) return 20
+    if (val >= 75) return 17
+    if (val >= 50) return 13
+    if (val >= 25) return 8
+    return 3
+  }
+
+  const rqdRating = getRqdRating(rqdValue)
+  const totalRmrScore = ucsStrength + rqdRating + disspacing + condition + groundwater
+
+  // Rock Class classification
+  const getRockClassification = (score: number) => {
+    if (score >= 81) return { class: 'Class I', text: 'Very Good Rock', color: 'bg-emerald-50 text-emerald-800 border-emerald-200' }
+    if (score >= 61) return { class: 'Class II', text: 'Good Rock', color: 'bg-teal-50 text-teal-800 border-teal-200' }
+    if (score >= 41) return { class: 'Class III', text: 'Fair Rock', color: 'bg-amber-50 text-amber-800 border-amber-200' }
+    if (score >= 21) return { class: 'Class IV', text: 'Poor Rock', color: 'bg-orange-50 text-orange-800 border-orange-200' }
+    return { class: 'Class V', text: 'Very Poor Rock', color: 'bg-red-50 text-red-800 border-red-200' }
+  }
+
+  const classification = getRockClassification(totalRmrScore)
+
   const handleDownloadCV = () => {
     alert("Simulating PDF download: Jacobus_Lodewicus_Wicus_Olivier_Geological_CV.pdf")
   }
@@ -146,7 +202,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-blue-600/10 selection:text-blue-900 antialiased overflow-x-hidden">
       
-      {/* Sticky Top Header Navigation */}
+      {/* Sticky Header Navigation */}
       <nav className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur-md shadow-xs">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <button
@@ -161,13 +217,13 @@ export default function App() {
                 Wicus Olivier
               </span>
               <span className="block font-mono text-[10px] text-slate-500 tracking-wider">
-                GEOLOGY CV & PORTFOLIO
+                ENGINEERING GEOLOGY CV
               </span>
             </div>
           </button>
 
           {/* Desktop Nav Links */}
-          <div className="hidden md:flex items-center gap-6">
+          <div className="hidden lg:flex items-center gap-6">
             {navigationItems.map((item) => (
               <button
                 key={item.id}
@@ -193,7 +249,7 @@ export default function App() {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 text-slate-500 hover:text-slate-900 transition-colors"
+            className="lg:hidden p-2 text-slate-500 hover:text-slate-900 transition-colors"
             aria-label="Toggle navigation menu"
           >
             {mobileMenuOpen ? (
@@ -210,7 +266,7 @@ export default function App() {
 
         {/* Mobile Navigation Drawer */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-b border-slate-200 bg-white px-6 py-4 flex flex-col gap-3 shadow-inner">
+          <div className="lg:hidden border-b border-slate-200 bg-white px-6 py-4 flex flex-col gap-3 shadow-inner">
             {navigationItems.map((item) => (
               <button
                 key={item.id}
@@ -270,26 +326,39 @@ export default function App() {
                     Jacobus Lodewicus (Wicus) Olivier
                   </h1>
                   <h2 className="text-base sm:text-lg font-bold text-slate-600 font-mono">
-                    Engineering & Environmental Geology Student | University of Pretoria
+                    Engineering Geology Student & IT Lab Technician
                   </h2>
+                </div>
+
+                {/* Key Facts Badges */}
+                <div className="flex flex-wrap justify-center md:justify-start gap-2">
+                  <span className="px-2.5 py-1 rounded bg-[#1E3A8A]/5 border border-[#1E3A8A]/10 text-[10px] font-mono font-bold text-[#1E3A8A]">
+                    3rd-Year BSc Student
+                  </span>
+                  <span className="px-2.5 py-1 rounded bg-[#1E3A8A]/5 border border-[#1E3A8A]/10 text-[10px] font-mono font-bold text-[#1E3A8A]">
+                    Code B Driver's License
+                  </span>
+                  <span className="px-2.5 py-1 rounded bg-slate-100 border border-slate-200 text-[10px] font-mono font-bold text-slate-600">
+                    Pretoria, South Africa
+                  </span>
                 </div>
 
                 <div className="inline-grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 bg-slate-50 border border-slate-200 rounded p-4 text-xs font-mono text-slate-600 text-left">
                   <div>
-                    <span className="text-slate-400 font-bold mr-1">DRIVERS:</span>
-                    <span>Code B (Own Transport)</span>
+                    <span className="text-slate-400 font-bold mr-1">TRANSPORT:</span>
+                    <span>Own Reliable Transport</span>
                   </div>
                   <div>
-                    <span className="text-slate-400 font-bold mr-1">LOCATION:</span>
-                    <span>Pretoria, South Africa</span>
+                    <span className="text-slate-400 font-bold mr-1">DEPENDENTS:</span>
+                    <span>None</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 font-bold mr-1">ID NUMBER:</span>
+                    <span>Available upon request</span>
                   </div>
                   <div>
                     <span className="text-slate-400 font-bold mr-1">GRADUATION:</span>
                     <span>Nov 2027 (Expected)</span>
-                  </div>
-                  <div>
-                    <span className="text-slate-400 font-bold mr-1">CONTACT:</span>
-                    <span>083 321 8026</span>
                   </div>
                 </div>
               </div>
@@ -299,32 +368,11 @@ export default function App() {
             {/* Profile Statement */}
             <div className="space-y-2">
               <h3 className="text-xs uppercase font-mono font-bold text-slate-400 tracking-wider">
-                Personal Statement
+                Professional Profile
               </h3>
               <p className="text-slate-700 text-sm sm:text-base max-w-4xl leading-relaxed">
-                A motivated 2nd-year BSc Engineering and Environmental Geology student eager to apply theoretical knowledge and practical experience to real-world challenges in geology and environmental engineering. Seeking internship or entry-level opportunities to develop expertise and contribute to impactful geological projects.
+                Motivated 3rd-year BSc Engineering and Environmental Geology student at the University of Pretoria with hands-on experience in technical troubleshooting and spatial data tools. Proven ability to balance rigorous academic coursework with a customer-facing technical support role. Eager to leverage theoretical knowledge in geology, practical GIS skills, and problem-solving capabilities in an entry-level or internship position within the engineering geology and environmental sectors.
               </p>
-            </div>
-
-            {/* Quick-Filter Navigation */}
-            <div className="space-y-2 pt-2">
-              <h3 className="text-xs uppercase font-mono font-bold text-slate-400 tracking-wider">
-                Core Domains
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                <span className="px-2.5 py-1 rounded bg-slate-100 border border-slate-200 text-[10px] font-mono font-bold text-slate-600">
-                  #Geotechnical
-                </span>
-                <span className="px-2.5 py-1 rounded bg-slate-100 border border-slate-200 text-[10px] font-mono font-bold text-slate-600">
-                  #GIS-RemoteSensing
-                </span>
-                <span className="px-2.5 py-1 rounded bg-slate-100 border border-slate-200 text-[10px] font-mono font-bold text-slate-600">
-                  #EnvironmentalGeology
-                </span>
-                <span className="px-2.5 py-1 rounded bg-slate-100 border border-slate-200 text-[10px] font-mono font-bold text-slate-600">
-                  #SoilScience
-                </span>
-              </div>
             </div>
 
             {/* Action Bar */}
@@ -374,57 +422,146 @@ export default function App() {
         </div>
       </section>
 
-      {/* Interactive Competencies & Coursework Hub */}
-      <section id="competencies" className="py-16 bg-slate-100 border-t border-b border-slate-200 relative z-10">
+      {/* Professional Experience & Education Timeline */}
+      <section id="timeline" className="py-16 bg-slate-100 border-t border-b border-slate-200 relative z-10">
         <div className="max-w-6xl mx-auto px-6">
           
-          {/* Header */}
-          <div className="mb-8 text-left">
-            <span className="text-xs font-mono font-bold text-[#1E3A8A] uppercase tracking-wider">
-              01. Core Capabilities
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950 mt-1">
-              Interactive Competencies & Coursework Hub
-            </h2>
-            <p className="text-slate-500 text-sm max-w-lg mt-1 font-mono">
-              Toggle academic domains to review university courses and core tools.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
             
-            {/* Toggles Panel (Left) */}
-            <div className="lg:col-span-4 space-y-2">
-              {courseworkData.map((category, idx) => {
-                const isActive = expandedCourseworkIdx === idx
-                return (
-                  <button
-                    key={idx}
-                    onClick={() => setExpandedCourseworkIdx(idx)}
-                    className={`w-full text-left p-4 rounded-lg border transition-all cursor-pointer font-semibold font-mono text-xs md:text-sm uppercase flex items-center justify-between ${
-                      isActive
-                        ? 'bg-white border-[#1E3A8A] text-[#1E3A8A] shadow-xs'
-                        : 'bg-transparent border-transparent hover:bg-white/40 text-slate-600'
-                    }`}
-                  >
-                    <span>{category.category.split(' & ')[0]}</span>
-                    <span className="text-slate-400 font-bold">{isActive ? '➔' : ''}</span>
-                  </button>
-                )
-              })}
+            {/* Timeline Left Menu */}
+            <div className="lg:col-span-4 space-y-6">
+              <div className="space-y-1">
+                <span className="text-xs font-mono font-bold text-[#1E3A8A] uppercase tracking-wider">
+                  01. Path & Track
+                </span>
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950">
+                  Experience & Education
+                </h2>
+                <p className="text-slate-500 text-sm font-mono mt-1 leading-relaxed">
+                  Toggle historical milestones below to review specific technical responsibilities and curriculum modules.
+                </p>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                {timelineData.map((event, idx) => {
+                  const isActive = activeTimelineIdx === idx
+                  return (
+                    <button
+                      key={idx}
+                      onClick={() => setActiveTimelineIdx(idx)}
+                      className={`w-full text-left p-4 rounded-lg border transition-all cursor-pointer relative z-10 ${
+                        isActive
+                          ? 'bg-white border-[#1E3A8A] shadow-xs'
+                          : 'bg-transparent border-transparent hover:bg-white/40'
+                      }`}
+                    >
+                      <div className="space-y-1">
+                        <span className="block text-[10px] font-mono font-bold text-[#1E3A8A] uppercase tracking-wider">
+                          {event.category === 'experience' ? 'Professional Experience' : 'Education'}
+                        </span>
+                        <h3 className={`font-bold font-mono text-xs sm:text-sm leading-tight transition-colors ${
+                          isActive ? 'text-slate-950 font-extrabold' : 'text-slate-700'
+                        }`}>
+                          {event.title}
+                        </h3>
+                        <p className="text-[10px] font-mono text-slate-400 font-bold whitespace-nowrap">
+                          {event.period}
+                        </p>
+                      </div>
+                    </button>
+                  )
+                })}
+              </div>
             </div>
 
-            {/* List Detail Panel (Right) */}
-            <div className="lg:col-span-8 bg-white border border-slate-200 rounded-lg p-6 sm:p-8 min-h-[250px] shadow-2xs flex flex-col justify-between">
+            {/* Timeline Detail Card */}
+            <div className="lg:col-span-8 bg-white border border-slate-200 rounded-lg p-6 sm:p-8 min-h-[320px] shadow-2xs flex flex-col justify-between text-left">
               
+              <div className="space-y-5">
+                <div className="border-b border-slate-100 pb-3">
+                  <span className="inline-block text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-100 border border-slate-200 text-slate-500 mb-1.5">
+                    {timelineData[activeTimelineIdx].category === 'experience' ? 'WORK PRACTICE' : 'ACADEMICS'}
+                  </span>
+                  <h3 className="text-xl font-extrabold text-slate-900 font-mono leading-snug">
+                    {timelineData[activeTimelineIdx].title}
+                  </h3>
+                  <p className="text-xs font-mono font-bold text-slate-500">
+                    {timelineData[activeTimelineIdx].subtitle}
+                  </p>
+                </div>
+
+                <ul className="space-y-3">
+                  {timelineData[activeTimelineIdx].bullets.map((bullet, bIdx) => (
+                    <li key={bIdx} className="flex gap-2.5 text-sm sm:text-base text-slate-600 leading-relaxed items-start">
+                      <span className="text-[#1E3A8A] mt-1 shrink-0 font-bold">&rarr;</span>
+                      <span>{bullet}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="pt-6 border-t border-slate-50 mt-6 flex justify-between items-center text-[10px] font-mono text-slate-400">
+                <span>University of Pretoria</span>
+                <span>{timelineData[activeTimelineIdx].period}</span>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      {/* Interactive Technical & Core Skills Grid */}
+      <section id="skills" className="py-16 max-w-6xl mx-auto px-6 relative z-10">
+        
+        {/* Header */}
+        <div className="mb-10 text-left">
+          <span className="text-xs font-mono font-bold text-[#1E3A8A] uppercase tracking-wider">
+            02. Technical Toolkit
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950 mt-1">
+            Skills & Coursework Hub
+          </h2>
+          <p className="text-slate-500 text-sm max-w-lg mt-1 font-mono">
+            Explore computational software, scientific mapping, and professional competencies.
+          </p>
+        </div>
+
+        {/* Tab Selection */}
+        <div className="flex flex-wrap border-b border-slate-200 mb-8 font-mono text-xs md:text-sm font-bold uppercase tracking-wider gap-2">
+          {skillsCategories.map((cat, idx) => (
+            <button
+              key={idx}
+              onClick={() => {
+                setActiveTabIdx(idx)
+                setShowWorkflow(false)
+              }}
+              className={`py-3 px-4 border-b-2 transition-all cursor-pointer ${
+                activeTabIdx === idx
+                  ? 'border-[#1E3A8A] text-[#1E3A8A] bg-[#1E3A8A]/5 rounded-t'
+                  : 'border-transparent text-slate-500 hover:text-slate-900'
+              }`}
+            >
+              {cat.category.split(' & ')[0]}
+            </button>
+          ))}
+        </div>
+
+        {/* Active Tab Contents */}
+        <div className="bg-white border border-slate-200 rounded-lg p-6 sm:p-8 shadow-2xs text-left">
+          
+          <div className="space-y-6">
+            <h3 className="text-lg font-bold text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2">
+              <span className="w-1.5 h-6 bg-[#1E3A8A] rounded-full" />
+              {skillsCategories[activeTabIdx].category}
+            </h3>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+              {/* Left Column: Skills list */}
               <div className="space-y-4">
-                <h3 className="text-lg font-bold text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2">
-                  <span className="w-1.5 h-6 bg-[#1E3A8A] rounded-full" />
-                  {courseworkData[expandedCourseworkIdx ?? 0].category}
-                </h3>
-                
-                <ul className="space-y-3.5 text-left">
-                  {courseworkData[expandedCourseworkIdx ?? 0].items.map((item, idx) => (
+                <ul className="space-y-3.5">
+                  {skillsCategories[activeTabIdx].items.map((item, idx) => (
                     <li key={idx} className="flex items-start gap-3 text-sm sm:text-base text-slate-600 leading-relaxed">
                       <span className="text-[#1E3A8A] mt-1 text-sm font-bold">&bull;</span>
                       <span>{item}</span>
@@ -433,8 +570,265 @@ export default function App() {
                 </ul>
               </div>
 
-              <div className="pt-6 border-t border-slate-50 mt-6 text-[10px] font-mono text-slate-400 text-right">
-                BSc Curriculum (University of Pretoria)
+              {/* Right Column: Workflow methodology widget for Geospatial tab */}
+              {skillsCategories[activeTabIdx].hasWorkflow && (
+                <div className="bg-slate-50 border border-slate-200 rounded-lg p-5 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <h4 className="font-bold text-xs font-mono text-slate-700 uppercase tracking-wider">
+                        Geospatial Workflow Widget
+                      </h4>
+                      <p className="text-[10px] text-slate-400 font-mono">
+                        Spectral analysis & NDVI processing
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => setShowWorkflow(!showWorkflow)}
+                      className="px-3 py-1.5 bg-[#1E3A8A] hover:bg-[#1E40AF] text-white rounded font-mono text-[10px] font-bold transition-all cursor-pointer shadow-2xs"
+                    >
+                      {showWorkflow ? 'Hide Workflow' : 'Run Demo Workflow'}
+                    </button>
+                  </div>
+
+                  {showWorkflow ? (
+                    <div className="bg-zinc-900 text-[#cbd5e1] border border-zinc-800 rounded p-4 font-mono text-[11px] space-y-2.5 animate-in fade-in duration-200">
+                      <div className="border-b border-zinc-800 pb-1.5 text-orange-400 font-bold uppercase tracking-wider flex justify-between">
+                        <span>GEE Processing Pipeline</span>
+                        <span className="text-emerald-400">RUNNING...</span>
+                      </div>
+                      <ol className="list-decimal list-inside space-y-1.5">
+                        {skillsCategories[activeTabIdx].workflowSteps?.map((step, sIdx) => (
+                          <li key={sIdx} className="leading-relaxed pl-1 text-[11px]">
+                            <span className="text-zinc-500 font-semibold">Step {sIdx + 1}:</span>{' '}
+                            <span className="text-zinc-300">{step}</span>
+                          </li>
+                        ))}
+                      </ol>
+                      <div className="text-emerald-400 font-semibold border-t border-zinc-850 pt-2 text-center text-[10px]">
+                        // SUCCESS: Geospatial index layers exported to QGIS project file.
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="h-40 border border-slate-200 border-dashed rounded flex flex-col items-center justify-center text-center text-xs text-slate-400 p-4 font-mono">
+                      <svg className="w-8 h-8 text-slate-300 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                      </svg>
+                      Click "Run Demo Workflow" to simulate the Google Earth Engine processing pipeline
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+      {/* Interactive Rock Mass Rating (RMR) Calculator Widget */}
+      <section id="rmr" className="py-16 bg-slate-100 border-t border-b border-slate-200 relative z-10">
+        <div className="max-w-6xl mx-auto px-6">
+          
+          {/* Header */}
+          <div className="mb-10 text-left">
+            <span className="text-xs font-mono font-bold text-[#1E3A8A] uppercase tracking-wider">
+              03. Engineering Utility Widget
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950 mt-1">
+              Rock Mass Rating (RMR) Calculator
+            </h2>
+            <p className="text-slate-500 text-sm max-w-xl mt-1 font-mono">
+              Evaluates geomechanical stability using Bieniawski (1989) standards. Adjust geological variables below to compute ratings dynamically.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            
+            {/* Inputs Panel (Left) */}
+            <div className="lg:col-span-7 bg-white border border-slate-200 rounded-lg p-6 sm:p-8 space-y-6 shadow-2xs">
+              <h3 className="text-lg font-bold text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2">
+                <span className="w-1.5 h-6 bg-[#1E3A8A] rounded-full" />
+                Parameters Input Sheet
+              </h3>
+
+              {/* 1. UCS Strength */}
+              <div className="space-y-2">
+                <label className="flex justify-between items-center text-xs font-mono font-bold text-slate-700">
+                  <span>1. UCS Strength of Intact Rock</span>
+                  <span className="text-[#1E3A8A] font-mono">Rating: {ucsStrength}</span>
+                </label>
+                <select
+                  value={ucsStrength}
+                  onChange={(e) => setUcsStrength(Number(e.target.value))}
+                  className="w-full px-3 py-2 border border-slate-200 hover:border-slate-300 rounded font-mono text-sm outline-none bg-slate-50 focus:border-[#1E3A8A] focus:ring-1 focus:ring-[#1E3A8A] transition-colors"
+                >
+                  <option value={15}>&gt;250 MPa [Rating: 15]</option>
+                  <option value={12}>100 - 250 MPa [Rating: 12]</option>
+                  <option value={7}>50 - 100 MPa [Rating: 7]</option>
+                  <option value={4}>25 - 50 MPa [Rating: 4]</option>
+                </select>
+              </div>
+
+              {/* 2. RQD Slider */}
+              <div className="space-y-2">
+                <div className="flex justify-between items-center text-xs font-mono font-bold text-slate-700">
+                  <span>2. RQD (Rock Quality Designation)</span>
+                  <span className="text-[#1E3A8A] font-mono">
+                    RQD: {rqdValue}% &rarr; Rating: {rqdRating}
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={rqdValue}
+                  onChange={(e) => setRqdValue(Number(e.target.value))}
+                  className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#1E3A8A]"
+                />
+                <div className="flex justify-between text-[9px] font-mono text-slate-400 px-0.5">
+                  <span>Very Poor (&lt;25%)</span>
+                  <span>Poor (25-50%)</span>
+                  <span>Fair (50-75%)</span>
+                  <span>Good (75-90%)</span>
+                  <span>Very Good (&gt;90%)</span>
+                </div>
+              </div>
+
+              {/* 3. Discontinuity Spacing */}
+              <div className="space-y-2">
+                <label className="flex justify-between items-center text-xs font-mono font-bold text-slate-700">
+                  <span>3. Discontinuity Spacing</span>
+                  <span className="text-[#1E3A8A] font-mono">Rating: {disspacing}</span>
+                </label>
+                <select
+                  value={disspacing}
+                  onChange={(e) => setDisspacing(Number(e.target.value))}
+                  className="w-full px-3 py-2 border border-slate-200 hover:border-slate-300 rounded font-mono text-sm outline-none bg-slate-50 focus:border-[#1E3A8A] focus:ring-1 focus:ring-[#1E3A8A] transition-colors"
+                >
+                  <option value={20}>&gt;2 m [Rating: 20]</option>
+                  <option value={15}>0.6 - 2 m [Rating: 15]</option>
+                  <option value={10}>200 - 600 mm [Rating: 10]</option>
+                  <option value={8}>60 - 200 mm [Rating: 8]</option>
+                </select>
+              </div>
+
+              {/* 4. Condition of Discontinuities */}
+              <div className="space-y-2">
+                <label className="flex justify-between items-center text-xs font-mono font-bold text-slate-700">
+                  <span>4. Condition of Discontinuities</span>
+                  <span className="text-[#1E3A8A] font-mono">Rating: {condition}</span>
+                </label>
+                <select
+                  value={condition}
+                  onChange={(e) => setCondition(Number(e.target.value))}
+                  className="w-full px-3 py-2 border border-slate-200 hover:border-slate-300 rounded font-mono text-sm outline-none bg-slate-50 focus:border-[#1E3A8A] focus:ring-1 focus:ring-[#1E3A8A] transition-colors"
+                >
+                  <option value={30}>Very Rough, unweathered, tightly closed [Rating: 30]</option>
+                  <option value={22}>Slightly Rough, apertures &lt;1mm, weathered [Rating: 22]</option>
+                  <option value={12}>Smooth joints, apertures 1-5mm [Rating: 12]</option>
+                </select>
+              </div>
+
+              {/* 5. Groundwater */}
+              <div className="space-y-2">
+                <label className="flex justify-between items-center text-xs font-mono font-bold text-slate-700">
+                  <span>5. Groundwater Conditions</span>
+                  <span className="text-[#1E3A8A] font-mono">Rating: {groundwater}</span>
+                </label>
+                <select
+                  value={groundwater}
+                  onChange={(e) => setGroundwater(Number(e.target.value))}
+                  className="w-full px-3 py-2 border border-slate-200 hover:border-slate-300 rounded font-mono text-sm outline-none bg-slate-50 focus:border-[#1E3A8A] focus:ring-1 focus:ring-[#1E3A8A] transition-colors"
+                >
+                  <option value={15}>Completely Dry [Rating: 15]</option>
+                  <option value={10}>Damp (minor inflows) [Rating: 10]</option>
+                  <option value={7}>Wet (joint pressure) [Rating: 7]</option>
+                  <option value={0}>Flowing [Rating: 0]</option>
+                </select>
+              </div>
+
+            </div>
+
+            {/* Output Display Panel (Right) */}
+            <div className="lg:col-span-5 bg-white border border-slate-200 rounded-lg p-6 sm:p-8 space-y-6 shadow-2xs h-full flex flex-col justify-between">
+              
+              <div className="space-y-6">
+                <h3 className="text-lg font-bold text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2">
+                  <span className="w-1.5 h-6 bg-[#1E3A8A] rounded-full" />
+                  Calculated Results
+                </h3>
+
+                {/* Score badge */}
+                <div className="text-center py-6 bg-slate-50 border border-slate-200 rounded-lg space-y-1">
+                  <span className="block text-[11px] font-mono font-bold text-slate-400 uppercase tracking-widest">
+                    TOTAL RMR SCORE
+                  </span>
+                  <span className="block text-6xl font-extrabold text-[#1E3A8A]">
+                    {totalRmrScore}
+                  </span>
+                  <span className="block text-xs font-mono text-slate-500">
+                    out of 100 points
+                  </span>
+                </div>
+
+                {/* Classification badge */}
+                <div className={`p-4 border rounded-lg text-center space-y-1 transition-colors duration-200 ${classification.color}`}>
+                  <span className="block text-xs font-mono font-bold uppercase tracking-widest">
+                    ROCK MASS CLASSIFICATION
+                  </span>
+                  <span className="block text-xl font-bold font-mono">
+                    {classification.class}
+                  </span>
+                  <span className="block text-sm font-semibold">
+                    ({classification.text})
+                  </span>
+                </div>
+              </div>
+
+              {/* RMR Reference Table */}
+              <div className="pt-6 border-t border-slate-100 space-y-3 mt-6">
+                <span className="block text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest text-left">
+                  Bieniawski Reference Table
+                </span>
+                <div className="overflow-x-auto text-[10px] font-mono text-slate-500">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="border-b border-slate-200 text-slate-800">
+                        <th className="pb-1.5 font-bold">RMR Range</th>
+                        <th className="pb-1.5 font-bold">Class</th>
+                        <th className="pb-1.5 font-bold">Quality</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr className={totalRmrScore >= 81 ? 'text-[#1E3A8A] font-bold bg-[#1E3A8A]/5' : ''}>
+                        <td className="py-1">81 – 100</td>
+                        <td>Class I</td>
+                        <td>Very Good Rock</td>
+                      </tr>
+                      <tr className={(totalRmrScore >= 61 && totalRmrScore <= 80) ? 'text-[#1E3A8A] font-bold bg-[#1E3A8A]/5' : ''}>
+                        <td className="py-1">61 – 80</td>
+                        <td>Class II</td>
+                        <td>Good Rock</td>
+                      </tr>
+                      <tr className={(totalRmrScore >= 41 && totalRmrScore <= 60) ? 'text-[#1E3A8A] font-bold bg-[#1E3A8A]/5' : ''}>
+                        <td className="py-1">41 – 60</td>
+                        <td>Class III</td>
+                        <td>Fair Rock</td>
+                      </tr>
+                      <tr className={(totalRmrScore >= 21 && totalRmrScore <= 40) ? 'text-[#1E3A8A] font-bold bg-[#1E3A8A]/5' : ''}>
+                        <td className="py-1">21 – 40</td>
+                        <td>Class IV</td>
+                        <td>Poor Rock</td>
+                      </tr>
+                      <tr className={totalRmrScore < 21 ? 'text-[#1E3A8A] font-bold bg-[#1E3A8A]/5' : ''}>
+                        <td className="py-1">&lt;21</td>
+                        <td>Class V</td>
+                        <td>Very Poor Rock</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
               </div>
 
             </div>
@@ -444,133 +838,65 @@ export default function App() {
         </div>
       </section>
 
-      {/* Dynamic Project & Experience Timeline */}
-      <section id="timeline-references" className="py-16 max-w-6xl mx-auto px-6 relative z-10">
+      {/* Verified Professional References Section */}
+      <section id="references" className="py-16 max-w-6xl mx-auto px-6 relative z-10">
         
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-          
-          {/* Education Track (Left) */}
-          <div className="lg:col-span-6 space-y-6">
-            
-            <div className="space-y-1">
-              <span className="text-xs font-mono font-bold text-[#1E3A8A] uppercase tracking-wider">
-                02. Academic Path
-              </span>
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950">
-                Education Timeline
-              </h2>
-            </div>
+        {/* Header */}
+        <div className="mb-10 text-left">
+          <span className="text-xs font-mono font-bold text-[#1E3A8A] uppercase tracking-wider">
+            05. Endorsements
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950 mt-1">
+            Verified Professional References
+          </h2>
+          <p className="text-slate-500 text-sm max-w-lg mt-1 font-mono">
+            Direct contacts verifying university employment and academic performance.
+          </p>
+        </div>
 
-            <div className="relative pl-6 space-y-8 border-l border-slate-200">
-              {educationData.map((edu, idx) => (
-                <div key={idx} className="relative">
-                  {/* Timeline point */}
-                  <span className="absolute -left-[30px] top-1.5 w-4 h-4 rounded-full bg-white border-2 border-[#1E3A8A] flex items-center justify-center">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#1E3A8A]" />
-                  </span>
+        {/* References Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
+          {referencesData.map((ref, idx) => (
+            <div
+              key={idx}
+              className="bg-white border border-slate-200 rounded-lg p-6 hover:shadow-md transition-shadow relative overflow-hidden"
+            >
+              {/* Subtle top indicator bar */}
+              <div className="absolute top-0 left-0 right-0 h-1 bg-[#1E3A8A]" />
+              
+              <div className="space-y-4">
+                <div className="space-y-1">
+                  <h3 className="text-lg font-bold text-slate-900 font-mono">
+                    {ref.name}
+                  </h3>
+                  <p className="text-xs text-slate-500 font-mono font-semibold">
+                    {ref.role} | {ref.company}
+                  </p>
+                </div>
 
-                  <div className="bg-white border border-slate-200 rounded-lg p-5 space-y-3 shadow-2xs">
-                    <div className="flex flex-wrap justify-between items-start gap-2 border-b border-slate-100 pb-2">
-                      <div>
-                        <h3 className="font-bold text-slate-900 font-mono text-sm sm:text-base">
-                          {edu.title}
-                        </h3>
-                        <p className="text-xs text-[#1E3A8A] font-semibold">
-                          {edu.institution}
-                        </p>
-                      </div>
-                      <span className="text-[10px] font-mono text-slate-400 font-bold whitespace-nowrap">
-                        {edu.period}
-                      </span>
-                    </div>
-
-                    <ul className="space-y-1.5 text-xs sm:text-sm text-slate-600">
-                      {edu.details.map((detail, dIdx) => (
-                        <li key={dIdx} className="flex gap-2 items-start leading-relaxed">
-                          <span className="text-[#1E3A8A] font-bold">&rsaquo;</span>
-                          <span>{detail}</span>
-                        </li>
-                      ))}
-                    </ul>
+                <div className="p-3 bg-slate-50 border border-slate-200 rounded space-y-1.5 font-mono text-xs text-slate-600">
+                  <div className="flex items-center gap-2">
+                    <span className="text-slate-400 font-bold uppercase w-16">EMAIL:</span>
+                    <a
+                      href={`mailto:${ref.email}`}
+                      className="text-[#1E3A8A] hover:underline font-semibold"
+                    >
+                      {ref.email}
+                    </a>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-slate-400 font-bold uppercase w-16">COMPANY:</span>
+                    <span>{ref.company}</span>
                   </div>
                 </div>
-              ))}
+              </div>
             </div>
-
-          </div>
-
-          {/* References Track (Right) */}
-          <div className="lg:col-span-6 space-y-6">
-            
-            <div className="space-y-1">
-              <span className="text-xs font-mono font-bold text-[#1E3A8A] uppercase tracking-wider">
-                03. Verification
-              </span>
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950">
-                Verified References
-              </h2>
-            </div>
-
-            <p className="text-slate-500 text-sm font-mono leading-relaxed">
-              Expand reference cards below to view contacts and academic relationships.
-            </p>
-
-            <div className="space-y-4">
-              {referencesData.map((ref, idx) => {
-                const isOpen = expandedReferenceIdx === idx
-                return (
-                  <div
-                    key={idx}
-                    className="bg-white border border-slate-200 rounded-lg p-5 hover:border-slate-300 transition-all flex flex-col justify-between"
-                  >
-                    <button
-                      onClick={() => setExpandedReferenceIdx(isOpen ? null : idx)}
-                      className="w-full text-left flex items-start justify-between cursor-pointer"
-                    >
-                      <div className="space-y-1">
-                        <h3 className="font-bold text-slate-900 font-mono text-base">
-                          {ref.name}
-                        </h3>
-                        <p className="text-xs text-slate-500 font-semibold leading-none">
-                          {ref.relationship}
-                        </p>
-                      </div>
-                      
-                      <div className="px-2.5 py-1 bg-slate-50 border border-slate-200 rounded text-slate-500 text-xs font-mono font-bold hover:text-[#1E3A8A] hover:border-[#1E3A8A] transition-colors">
-                        {isOpen ? 'Close' : 'Expand'}
-                      </div>
-                    </button>
-
-                    {isOpen && (
-                      <div className="mt-4 pt-4 border-t border-slate-100 space-y-3 animate-in fade-in duration-200 text-left text-sm text-slate-600">
-                        <div className="p-3 bg-slate-50 rounded border border-slate-200 space-y-1.5 font-mono text-xs">
-                          <div>
-                            <span className="text-slate-400 font-bold">CONTACT PHONE:</span>{' '}
-                            <a href={`tel:${ref.phone.replace(/\s+/g, '')}`} className="text-[#1E3A8A] hover:underline font-bold">
-                              {ref.phone}
-                            </a>
-                          </div>
-                          <div>
-                            <span className="text-slate-400 font-bold">RELATIONSHIP:</span> {ref.relationship}
-                          </div>
-                        </div>
-                        <p className="text-xs leading-relaxed text-slate-500 font-sans">
-                          {ref.context}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                )
-              })}
-            </div>
-
-          </div>
-
+          ))}
         </div>
 
       </section>
 
-      {/* Corporate Styled Footer */}
+      {/* Corporate Footer */}
       <footer className="border-t border-slate-200 bg-white py-12 text-center text-xs text-slate-500 relative z-10">
         <div className="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="text-left">
@@ -578,21 +904,21 @@ export default function App() {
               Jacobus Lodewicus (Wicus) Olivier
             </span>
             <span className="block text-[10px] text-slate-400 font-mono tracking-wide mt-1">
-              Engineering & Environmental Geology Student | Pretoria
+              Engineering Geology Student & IT Lab Technician
             </span>
           </div>
 
           {/* Footer Navigation */}
           <div className="flex flex-wrap items-center justify-center gap-6 font-mono text-[10px] uppercase font-bold tracking-wider">
-            <button onClick={() => scrollToSection('hero')} className="hover:text-slate-950 transition-colors cursor-pointer">
-              Overview
-            </button>
-            <button onClick={() => scrollToSection('competencies')} className="hover:text-slate-950 transition-colors cursor-pointer">
-              Competencies
-            </button>
-            <button onClick={() => scrollToSection('timeline-references')} className="hover:text-slate-950 transition-colors cursor-pointer">
-              Education & References
-            </button>
+            {navigationItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => scrollToSection(item.id)}
+                className="hover:text-slate-950 transition-colors cursor-pointer"
+              >
+                {item.label}
+              </button>
+            ))}
           </div>
         </div>
         <div className="mt-8 text-[10px] text-slate-400">
