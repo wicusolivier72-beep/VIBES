@@ -151,9 +151,7 @@ export default function App() {
     }
   }
 
-  const handleDownloadCV = () => {
-    alert("Simulating PDF download: Jacobus_Lodewicus_Wicus_Olivier_Geological_CV.pdf")
-  }
+
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-blue-600/10 selection:text-blue-900 antialiased overflow-x-hidden">
@@ -194,12 +192,6 @@ export default function App() {
                 )}
               </button>
             ))}
-            <button
-              onClick={handleDownloadCV}
-              className="px-3.5 py-1.5 rounded border border-[#1E3A8A] text-[#1E3A8A] text-xs font-mono font-bold hover:bg-[#1E3A8A] hover:text-white transition-all cursor-pointer shadow-2xs"
-            >
-              PDF CV
-            </button>
           </div>
 
           {/* Mobile Menu Button */}
@@ -234,12 +226,6 @@ export default function App() {
                 {item.label}
               </button>
             ))}
-            <button
-              onClick={handleDownloadCV}
-              className="w-full text-center px-4 py-2.5 rounded border border-[#1E3A8A] text-[#1E3A8A] text-xs font-mono font-bold hover:bg-[#1E3A8A] hover:text-white transition-all"
-            >
-              Download PDF CV
-            </button>
           </div>
         )}
       </nav>
@@ -360,16 +346,10 @@ export default function App() {
                   href="https://github.com"
                   target="_blank"
                   rel="noreferrer"
-                  className="px-4 py-2 border border-slate-200 hover:border-[#1E3A8A] rounded font-mono text-xs font-bold text-slate-700 hover:text-[#1E3A8A] transition-colors bg-white shadow-2xs text-center flex-1 sm:flex-initial"
+                  className="px-5 py-2.5 border border-slate-200 hover:border-[#1E3A8A] rounded font-mono text-xs font-bold text-slate-700 hover:text-[#1E3A8A] transition-colors bg-white shadow-2xs text-center w-full sm:w-auto"
                 >
                   View GitHub
                 </a>
-                <button
-                  onClick={handleDownloadCV}
-                  className="px-4 py-2 bg-[#1E3A8A] hover:bg-[#1E40AF] text-white rounded font-mono text-xs font-bold transition-all shadow-xs text-center flex-1 sm:flex-initial cursor-pointer"
-                >
-                  Download PDF CV
-                </button>
               </div>
             </div>
 
