@@ -260,7 +260,7 @@ export default function App() {
               {/* Photo Column with Custom Geological Scale Styling */}
               <div className="shrink-0 relative">
                 <img
-                  src="/profile.jpg"
+                  src="/profile.png"
                   alt="Wicus Olivier"
                   className="w-48 h-60 object-cover rounded-lg border-2 border-slate-200 shadow-sm"
                 />
