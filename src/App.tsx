@@ -4,8 +4,6 @@ import { useState, useEffect } from 'react'
 interface CourseworkCategory {
   category: string
   items: string[]
-  hasWorkflow?: boolean
-  workflowSteps?: string[]
 }
 
 interface TimelineEvent {
@@ -23,16 +21,15 @@ interface Reference {
   email: string
 }
 
-// Navigation Items
+// Navigation Items (RMR removed)
 const navigationItems = [
   { id: 'hero', label: 'Overview' },
   { id: 'timeline', label: 'Experience & Education' },
   { id: 'skills', label: 'Skills & Tools' },
-  { id: 'rmr', label: 'RMR Calculator' },
   { id: 'references', label: 'References' },
 ]
 
-// Professional Timeline Data
+// Professional Timeline Data (Lab tech bullets corrected)
 const timelineData: TimelineEvent[] = [
   {
     title: 'Student IT Lab Technician',
@@ -40,10 +37,9 @@ const timelineData: TimelineEvent[] = [
     period: 'February 2026 - Present',
     category: 'experience',
     bullets: [
-      'Provide front-line technical support for undergraduate/postgraduate students and academic staff.',
+      'Provide front-line technical support for undergraduate students.',
       'Diagnose and troubleshoot computer laboratory hardware, including PCs, printers, and screens.',
-      'Configure software applications, handle domain login assistance, and resolve local network connectivity issues.',
-      'Assist students with accessing academic portal resources and configuring specialized GIS processing environments.'
+      'Configure software applications, handle domain login assistance, and resolve local network connectivity issues.'
     ]
   },
   {
@@ -69,7 +65,7 @@ const timelineData: TimelineEvent[] = [
   }
 ]
 
-// Skills and Coursework Data
+// Skills and Coursework Data (Workflow removed)
 const skillsCategories: CourseworkCategory[] = [
   {
     category: 'Geospatial & Technical Software',
@@ -77,14 +73,6 @@ const skillsCategories: CourseworkCategory[] = [
       'QGIS (Vector mapping, spatial analysis, overlay zoning, raster calculations)',
       'Google Earth Engine (GEE) (Scripting satellite datasets, temporal band comparisons, spectral analysis)',
       'Geotechnical Logging Utilities (Parsing borehole depths, plotting stratigraphic columns)'
-    ],
-    hasWorkflow: true,
-    workflowSteps: [
-      'Query & filter Sentinel-2 multispectral surface reflectance datasets for target dates.',
-      'Apply cloud masking using QA bands to generate clear geographic composites.',
-      'Calculate Normalized Difference Vegetation Index (NDVI) mapping formulas: (B8 - B4) / (B8 + B4).',
-      'Classify land usage classes via supervised Random Forest model algorithms.',
-      'Export multi-temporal raster layers to QGIS for vector overlay mapping comparison.'
     ]
   },
   {
@@ -128,15 +116,7 @@ export default function App() {
   
   // Interactive UI State
   const [activeTabIdx, setActiveTabIdx] = useState<number>(0)
-  const [showWorkflow, setShowWorkflow] = useState<boolean>(false)
   const [activeTimelineIdx, setActiveTimelineIdx] = useState<number>(0)
-
-  // RMR Calculator State
-  const [ucsStrength, setUcsStrength] = useState<number>(12) // Default: 100-250 MPa (Rating: 12)
-  const [rqdValue, setRqdValue] = useState<number>(75)      // Default: 75% RQD
-  const [disspacing, setDisspacing] = useState<number>(15)    // Default: 0.6-2m (Rating: 15)
-  const [condition, setCondition] = useState<number>(22)      // Default: Slightly Rough (Rating: 22)
-  const [groundwater, setGroundwater] = useState<number>(10)  // Default: Damp (Rating: 10)
 
   // Scroll spy setup
   useEffect(() => {
@@ -170,30 +150,6 @@ export default function App() {
       el.scrollIntoView({ behavior: 'smooth' })
     }
   }
-
-  // Calculate RQD rating based on the prompt's rules:
-  // >90% [20], 75-90% [17], 50-75% [13], 25-50% [8], <25% [3]
-  const getRqdRating = (val: number): number => {
-    if (val > 90) return 20
-    if (val >= 75) return 17
-    if (val >= 50) return 13
-    if (val >= 25) return 8
-    return 3
-  }
-
-  const rqdRating = getRqdRating(rqdValue)
-  const totalRmrScore = ucsStrength + rqdRating + disspacing + condition + groundwater
-
-  // Rock Class classification
-  const getRockClassification = (score: number) => {
-    if (score >= 81) return { class: 'Class I', text: 'Very Good Rock', color: 'bg-emerald-50 text-emerald-800 border-emerald-200' }
-    if (score >= 61) return { class: 'Class II', text: 'Good Rock', color: 'bg-teal-50 text-teal-800 border-teal-200' }
-    if (score >= 41) return { class: 'Class III', text: 'Fair Rock', color: 'bg-amber-50 text-amber-800 border-amber-200' }
-    if (score >= 21) return { class: 'Class IV', text: 'Poor Rock', color: 'bg-orange-50 text-orange-800 border-orange-200' }
-    return { class: 'Class V', text: 'Very Poor Rock', color: 'bg-red-50 text-red-800 border-red-200' }
-  }
-
-  const classification = getRockClassification(totalRmrScore)
 
   const handleDownloadCV = () => {
     alert("Simulating PDF download: Jacobus_Lodewicus_Wicus_Olivier_Geological_CV.pdf")
@@ -533,10 +489,7 @@ export default function App() {
           {skillsCategories.map((cat, idx) => (
             <button
               key={idx}
-              onClick={() => {
-                setActiveTabIdx(idx)
-                setShowWorkflow(false)
-              }}
+              onClick={() => setActiveTabIdx(idx)}
               className={`py-3 px-4 border-b-2 transition-all cursor-pointer ${
                 activeTabIdx === idx
                   ? 'border-[#1E3A8A] text-[#1E3A8A] bg-[#1E3A8A]/5 rounded-t'
@@ -557,285 +510,21 @@ export default function App() {
               {skillsCategories[activeTabIdx].category}
             </h3>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-              {/* Left Column: Skills list */}
-              <div className="space-y-4">
-                <ul className="space-y-3.5">
-                  {skillsCategories[activeTabIdx].items.map((item, idx) => (
-                    <li key={idx} className="flex items-start gap-3 text-sm sm:text-base text-slate-600 leading-relaxed">
-                      <span className="text-[#1E3A8A] mt-1 text-sm font-bold">&bull;</span>
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* Right Column: Workflow methodology widget for Geospatial tab */}
-              {skillsCategories[activeTabIdx].hasWorkflow && (
-                <div className="bg-slate-50 border border-slate-200 rounded-lg p-5 space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-0.5">
-                      <h4 className="font-bold text-xs font-mono text-slate-700 uppercase tracking-wider">
-                        Geospatial Workflow Widget
-                      </h4>
-                      <p className="text-[10px] text-slate-400 font-mono">
-                        Spectral analysis & NDVI processing
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => setShowWorkflow(!showWorkflow)}
-                      className="px-3 py-1.5 bg-[#1E3A8A] hover:bg-[#1E40AF] text-white rounded font-mono text-[10px] font-bold transition-all cursor-pointer shadow-2xs"
-                    >
-                      {showWorkflow ? 'Hide Workflow' : 'Run Demo Workflow'}
-                    </button>
-                  </div>
-
-                  {showWorkflow ? (
-                    <div className="bg-zinc-900 text-[#cbd5e1] border border-zinc-800 rounded p-4 font-mono text-[11px] space-y-2.5 animate-in fade-in duration-200">
-                      <div className="border-b border-zinc-800 pb-1.5 text-orange-400 font-bold uppercase tracking-wider flex justify-between">
-                        <span>GEE Processing Pipeline</span>
-                        <span className="text-emerald-400">RUNNING...</span>
-                      </div>
-                      <ol className="list-decimal list-inside space-y-1.5">
-                        {skillsCategories[activeTabIdx].workflowSteps?.map((step, sIdx) => (
-                          <li key={sIdx} className="leading-relaxed pl-1 text-[11px]">
-                            <span className="text-zinc-500 font-semibold">Step {sIdx + 1}:</span>{' '}
-                            <span className="text-zinc-300">{step}</span>
-                          </li>
-                        ))}
-                      </ol>
-                      <div className="text-emerald-400 font-semibold border-t border-zinc-850 pt-2 text-center text-[10px]">
-                        // SUCCESS: Geospatial index layers exported to QGIS project file.
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="h-40 border border-slate-200 border-dashed rounded flex flex-col items-center justify-center text-center text-xs text-slate-400 p-4 font-mono">
-                      <svg className="w-8 h-8 text-slate-300 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                      </svg>
-                      Click "Run Demo Workflow" to simulate the Google Earth Engine processing pipeline
-                    </div>
-                  )}
-                </div>
-              )}
+            <div className="space-y-4">
+              <ul className="space-y-3.5 max-w-3xl">
+                {skillsCategories[activeTabIdx].items.map((item, idx) => (
+                  <li key={idx} className="flex items-start gap-3 text-sm sm:text-base text-slate-600 leading-relaxed">
+                    <span className="text-[#1E3A8A] mt-1 text-sm font-bold">&bull;</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
 
           </div>
 
         </div>
 
-      </section>
-
-      {/* Interactive Rock Mass Rating (RMR) Calculator Widget */}
-      <section id="rmr" className="py-16 bg-slate-100 border-t border-b border-slate-200 relative z-10">
-        <div className="max-w-6xl mx-auto px-6">
-          
-          {/* Header */}
-          <div className="mb-10 text-left">
-            <span className="text-xs font-mono font-bold text-[#1E3A8A] uppercase tracking-wider">
-              03. Engineering Utility Widget
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950 mt-1">
-              Rock Mass Rating (RMR) Calculator
-            </h2>
-            <p className="text-slate-500 text-sm max-w-xl mt-1 font-mono">
-              Evaluates geomechanical stability using Bieniawski (1989) standards. Adjust geological variables below to compute ratings dynamically.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            
-            {/* Inputs Panel (Left) */}
-            <div className="lg:col-span-7 bg-white border border-slate-200 rounded-lg p-6 sm:p-8 space-y-6 shadow-2xs">
-              <h3 className="text-lg font-bold text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2">
-                <span className="w-1.5 h-6 bg-[#1E3A8A] rounded-full" />
-                Parameters Input Sheet
-              </h3>
-
-              {/* 1. UCS Strength */}
-              <div className="space-y-2">
-                <label className="flex justify-between items-center text-xs font-mono font-bold text-slate-700">
-                  <span>1. UCS Strength of Intact Rock</span>
-                  <span className="text-[#1E3A8A] font-mono">Rating: {ucsStrength}</span>
-                </label>
-                <select
-                  value={ucsStrength}
-                  onChange={(e) => setUcsStrength(Number(e.target.value))}
-                  className="w-full px-3 py-2 border border-slate-200 hover:border-slate-300 rounded font-mono text-sm outline-none bg-slate-50 focus:border-[#1E3A8A] focus:ring-1 focus:ring-[#1E3A8A] transition-colors"
-                >
-                  <option value={15}>&gt;250 MPa [Rating: 15]</option>
-                  <option value={12}>100 - 250 MPa [Rating: 12]</option>
-                  <option value={7}>50 - 100 MPa [Rating: 7]</option>
-                  <option value={4}>25 - 50 MPa [Rating: 4]</option>
-                </select>
-              </div>
-
-              {/* 2. RQD Slider */}
-              <div className="space-y-2">
-                <div className="flex justify-between items-center text-xs font-mono font-bold text-slate-700">
-                  <span>2. RQD (Rock Quality Designation)</span>
-                  <span className="text-[#1E3A8A] font-mono">
-                    RQD: {rqdValue}% &rarr; Rating: {rqdRating}
-                  </span>
-                </div>
-                <input
-                  type="range"
-                  min="0"
-                  max="100"
-                  value={rqdValue}
-                  onChange={(e) => setRqdValue(Number(e.target.value))}
-                  className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#1E3A8A]"
-                />
-                <div className="flex justify-between text-[9px] font-mono text-slate-400 px-0.5">
-                  <span>Very Poor (&lt;25%)</span>
-                  <span>Poor (25-50%)</span>
-                  <span>Fair (50-75%)</span>
-                  <span>Good (75-90%)</span>
-                  <span>Very Good (&gt;90%)</span>
-                </div>
-              </div>
-
-              {/* 3. Discontinuity Spacing */}
-              <div className="space-y-2">
-                <label className="flex justify-between items-center text-xs font-mono font-bold text-slate-700">
-                  <span>3. Discontinuity Spacing</span>
-                  <span className="text-[#1E3A8A] font-mono">Rating: {disspacing}</span>
-                </label>
-                <select
-                  value={disspacing}
-                  onChange={(e) => setDisspacing(Number(e.target.value))}
-                  className="w-full px-3 py-2 border border-slate-200 hover:border-slate-300 rounded font-mono text-sm outline-none bg-slate-50 focus:border-[#1E3A8A] focus:ring-1 focus:ring-[#1E3A8A] transition-colors"
-                >
-                  <option value={20}>&gt;2 m [Rating: 20]</option>
-                  <option value={15}>0.6 - 2 m [Rating: 15]</option>
-                  <option value={10}>200 - 600 mm [Rating: 10]</option>
-                  <option value={8}>60 - 200 mm [Rating: 8]</option>
-                </select>
-              </div>
-
-              {/* 4. Condition of Discontinuities */}
-              <div className="space-y-2">
-                <label className="flex justify-between items-center text-xs font-mono font-bold text-slate-700">
-                  <span>4. Condition of Discontinuities</span>
-                  <span className="text-[#1E3A8A] font-mono">Rating: {condition}</span>
-                </label>
-                <select
-                  value={condition}
-                  onChange={(e) => setCondition(Number(e.target.value))}
-                  className="w-full px-3 py-2 border border-slate-200 hover:border-slate-300 rounded font-mono text-sm outline-none bg-slate-50 focus:border-[#1E3A8A] focus:ring-1 focus:ring-[#1E3A8A] transition-colors"
-                >
-                  <option value={30}>Very Rough, unweathered, tightly closed [Rating: 30]</option>
-                  <option value={22}>Slightly Rough, apertures &lt;1mm, weathered [Rating: 22]</option>
-                  <option value={12}>Smooth joints, apertures 1-5mm [Rating: 12]</option>
-                </select>
-              </div>
-
-              {/* 5. Groundwater */}
-              <div className="space-y-2">
-                <label className="flex justify-between items-center text-xs font-mono font-bold text-slate-700">
-                  <span>5. Groundwater Conditions</span>
-                  <span className="text-[#1E3A8A] font-mono">Rating: {groundwater}</span>
-                </label>
-                <select
-                  value={groundwater}
-                  onChange={(e) => setGroundwater(Number(e.target.value))}
-                  className="w-full px-3 py-2 border border-slate-200 hover:border-slate-300 rounded font-mono text-sm outline-none bg-slate-50 focus:border-[#1E3A8A] focus:ring-1 focus:ring-[#1E3A8A] transition-colors"
-                >
-                  <option value={15}>Completely Dry [Rating: 15]</option>
-                  <option value={10}>Damp (minor inflows) [Rating: 10]</option>
-                  <option value={7}>Wet (joint pressure) [Rating: 7]</option>
-                  <option value={0}>Flowing [Rating: 0]</option>
-                </select>
-              </div>
-
-            </div>
-
-            {/* Output Display Panel (Right) */}
-            <div className="lg:col-span-5 bg-white border border-slate-200 rounded-lg p-6 sm:p-8 space-y-6 shadow-2xs h-full flex flex-col justify-between">
-              
-              <div className="space-y-6">
-                <h3 className="text-lg font-bold text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2">
-                  <span className="w-1.5 h-6 bg-[#1E3A8A] rounded-full" />
-                  Calculated Results
-                </h3>
-
-                {/* Score badge */}
-                <div className="text-center py-6 bg-slate-50 border border-slate-200 rounded-lg space-y-1">
-                  <span className="block text-[11px] font-mono font-bold text-slate-400 uppercase tracking-widest">
-                    TOTAL RMR SCORE
-                  </span>
-                  <span className="block text-6xl font-extrabold text-[#1E3A8A]">
-                    {totalRmrScore}
-                  </span>
-                  <span className="block text-xs font-mono text-slate-500">
-                    out of 100 points
-                  </span>
-                </div>
-
-                {/* Classification badge */}
-                <div className={`p-4 border rounded-lg text-center space-y-1 transition-colors duration-200 ${classification.color}`}>
-                  <span className="block text-xs font-mono font-bold uppercase tracking-widest">
-                    ROCK MASS CLASSIFICATION
-                  </span>
-                  <span className="block text-xl font-bold font-mono">
-                    {classification.class}
-                  </span>
-                  <span className="block text-sm font-semibold">
-                    ({classification.text})
-                  </span>
-                </div>
-              </div>
-
-              {/* RMR Reference Table */}
-              <div className="pt-6 border-t border-slate-100 space-y-3 mt-6">
-                <span className="block text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest text-left">
-                  Bieniawski Reference Table
-                </span>
-                <div className="overflow-x-auto text-[10px] font-mono text-slate-500">
-                  <table className="w-full text-left border-collapse">
-                    <thead>
-                      <tr className="border-b border-slate-200 text-slate-800">
-                        <th className="pb-1.5 font-bold">RMR Range</th>
-                        <th className="pb-1.5 font-bold">Class</th>
-                        <th className="pb-1.5 font-bold">Quality</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr className={totalRmrScore >= 81 ? 'text-[#1E3A8A] font-bold bg-[#1E3A8A]/5' : ''}>
-                        <td className="py-1">81 – 100</td>
-                        <td>Class I</td>
-                        <td>Very Good Rock</td>
-                      </tr>
-                      <tr className={(totalRmrScore >= 61 && totalRmrScore <= 80) ? 'text-[#1E3A8A] font-bold bg-[#1E3A8A]/5' : ''}>
-                        <td className="py-1">61 – 80</td>
-                        <td>Class II</td>
-                        <td>Good Rock</td>
-                      </tr>
-                      <tr className={(totalRmrScore >= 41 && totalRmrScore <= 60) ? 'text-[#1E3A8A] font-bold bg-[#1E3A8A]/5' : ''}>
-                        <td className="py-1">41 – 60</td>
-                        <td>Class III</td>
-                        <td>Fair Rock</td>
-                      </tr>
-                      <tr className={(totalRmrScore >= 21 && totalRmrScore <= 40) ? 'text-[#1E3A8A] font-bold bg-[#1E3A8A]/5' : ''}>
-                        <td className="py-1">21 – 40</td>
-                        <td>Class IV</td>
-                        <td>Poor Rock</td>
-                      </tr>
-                      <tr className={totalRmrScore < 21 ? 'text-[#1E3A8A] font-bold bg-[#1E3A8A]/5' : ''}>
-                        <td className="py-1">&lt;21</td>
-                        <td>Class V</td>
-                        <td>Very Poor Rock</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
       </section>
 
       {/* Verified Professional References Section */}
@@ -844,7 +533,7 @@ export default function App() {
         {/* Header */}
         <div className="mb-10 text-left">
           <span className="text-xs font-mono font-bold text-[#1E3A8A] uppercase tracking-wider">
-            05. Endorsements
+            03. Endorsements
           </span>
           <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950 mt-1">
             Verified Professional References
