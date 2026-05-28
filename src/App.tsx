@@ -100,7 +100,7 @@ const referencesData: Reference[] = [
     name: 'Shelly van Heerden',
     role: 'Previous Employer',
     company: 'University of Pretoria',
-    email: 'shelly.vanheennden@up.ac.za'
+    email: 'shelly.vanheerden@up.ac.za'
   },
   {
     name: 'Zamani Dubazana',
