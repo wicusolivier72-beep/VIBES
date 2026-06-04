@@ -132,8 +132,8 @@ function AsciiPortrait() {
     const img = new Image()
     img.src = '/profile.png'
     img.onload = () => {
-      const cols = 22
-      const rows = 28
+      const cols = 56
+      const rows = 70
       const tempCanvas = document.createElement('canvas')
       tempCanvas.width = cols
       tempCanvas.height = rows
@@ -146,8 +146,8 @@ function AsciiPortrait() {
       // ASCII character density levels
       const CHARS = '@#NWMB8OQ9ahkbdpqwmZ0QLCJUYXzcvunxrjft/\\|()1{}[]?-_+~<>i!lI;:,"^`\'. '
       const list: Particle[] = []
-      const charWidth = 192 / cols
-      const charHeight = 240 / rows
+      const charWidth = 280 / cols
+      const charHeight = 350 / rows
 
       for (let y = 0; y < rows; y++) {
         for (let x = 0; x < cols; x++) {
@@ -198,8 +198,8 @@ function AsciiPortrait() {
 
     const render = () => {
       const dpi = window.devicePixelRatio || 1
-      const width = 192
-      const height = 240
+      const width = 280
+      const height = 350
 
       if (canvas.width !== width * dpi || canvas.height !== height * dpi) {
         canvas.width = width * dpi
@@ -210,7 +210,7 @@ function AsciiPortrait() {
       }
 
       ctx.clearRect(0, 0, width, height)
-      ctx.font = 'bold 9px monospace'
+      ctx.font = 'bold 6px monospace'
       ctx.textAlign = 'center'
       ctx.textBaseline = 'middle'
 
@@ -225,12 +225,12 @@ function AsciiPortrait() {
           const dx = p.currentX - mouse.x
           const dy = p.currentY - mouse.y
           const dist = Math.sqrt(dx * dx + dy * dy)
-          const pushRadius = 40
+          const pushRadius = 60
 
           if (dist < pushRadius) {
             const force = (pushRadius - dist) / pushRadius
             const angle = Math.atan2(dy, dx)
-            const pushDist = 35 * force
+            const pushDist = 45 * force
             tx = p.targetX + Math.cos(angle) * pushDist
             ty = p.targetY + Math.sin(angle) * pushDist
           }
@@ -271,9 +271,9 @@ function AsciiPortrait() {
   }
 
   return (
-    <div className="w-48 h-60 bg-slate-100 dark:bg-zinc-950 rounded-lg border-2 border-slate-200 dark:border-zinc-800 shadow-sm overflow-hidden flex items-center justify-center relative cursor-cell transition-colors duration-300">
+    <div className="w-[280px] h-[350px] bg-slate-100 dark:bg-zinc-950 rounded-lg border-2 border-slate-200 dark:border-zinc-800 shadow-sm overflow-hidden flex items-center justify-center relative cursor-cell transition-colors duration-300">
       {!loaded && (
-        <div className="text-slate-400 dark:text-zinc-550 font-mono text-[9px] animate-pulse">
+        <div className="text-slate-400 dark:text-zinc-555 font-mono text-[9px] animate-pulse">
           ASCIFYING HEADSHOT...
         </div>
       )}
