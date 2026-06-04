@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 // Interfaces
 interface CourseworkCategory {
@@ -21,6 +21,17 @@ interface Reference {
   email: string
 }
 
+interface Particle {
+  char: string
+  color: string
+  targetX: number
+  targetY: number
+  currentX: number
+  currentY: number
+  vx: number
+  vy: number
+}
+
 // Navigation Items (RMR removed)
 const navigationItems = [
   { id: 'hero', label: 'Overview' },
@@ -29,7 +40,7 @@ const navigationItems = [
   { id: 'references', label: 'References' },
 ]
 
-// Professional Timeline Data
+// Professional Timeline Data (Lab tech bullets corrected)
 const timelineData: TimelineEvent[] = [
   {
     title: 'Student IT Lab Technician',
@@ -109,6 +120,172 @@ const referencesData: Reference[] = [
     email: 'zamani.dubazana@up.ac.za'
   }
 ]
+
+// Interactive ASCII Art Portrait Component
+function AsciiPortrait() {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null)
+  const particlesRef = useRef<Particle[]>([])
+  const mouseRef = useRef<{ x: number; y: number } | null>(null)
+  const [loaded, setLoaded] = useState(false)
+
+  useEffect(() => {
+    const img = new Image()
+    img.src = '/profile.png'
+    img.onload = () => {
+      const cols = 22
+      const rows = 28
+      const tempCanvas = document.createElement('canvas')
+      tempCanvas.width = cols
+      tempCanvas.height = rows
+      const tempCtx = tempCanvas.getContext('2d')
+      if (!tempCtx) return
+
+      tempCtx.drawImage(img, 0, 0, cols, rows)
+      const imgData = tempCtx.getImageData(0, 0, cols, rows).data
+
+      // ASCII character density levels
+      const CHARS = '@#NWMB8OQ9ahkbdpqwmZ0QLCJUYXzcvunxrjft/\\|()1{}[]?-_+~<>i!lI;:,"^`\'. '
+      const list: Particle[] = []
+      const charWidth = 192 / cols
+      const charHeight = 240 / rows
+
+      for (let y = 0; y < rows; y++) {
+        for (let x = 0; x < cols; x++) {
+          const idx = (y * cols + x) * 4
+          const r = imgData[idx]
+          const g = imgData[idx + 1]
+          const b = imgData[idx + 2]
+          const a = imgData[idx + 3]
+
+          if (a < 50) continue // Skip highly transparent pixels
+
+          const brightness = 0.299 * r + 0.587 * g + 0.114 * b
+          const charIdx = Math.floor((brightness / 255) * (CHARS.length - 1))
+          let char = CHARS[charIdx]
+
+          // Ensure visual grid continuity (replace spaces with subtle dots)
+          if (char === ' ') char = '.'
+
+          const targetX = x * charWidth + charWidth / 2
+          const targetY = y * charHeight + charHeight / 2
+
+          list.push({
+            char,
+            color: `rgb(${r}, ${g}, ${b})`,
+            targetX,
+            targetY,
+            currentX: targetX,
+            currentY: targetY,
+            vx: 0,
+            vy: 0,
+          })
+        }
+      }
+
+      particlesRef.current = list
+      setLoaded(true)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!loaded) return
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    let animId: number
+
+    const render = () => {
+      const dpi = window.devicePixelRatio || 1
+      const width = 192
+      const height = 240
+
+      if (canvas.width !== width * dpi || canvas.height !== height * dpi) {
+        canvas.width = width * dpi
+        canvas.height = height * dpi
+        canvas.style.width = `${width}px`
+        canvas.style.height = `${height}px`
+        ctx.scale(dpi, dpi)
+      }
+
+      ctx.clearRect(0, 0, width, height)
+      ctx.font = 'bold 9px monospace'
+      ctx.textAlign = 'center'
+      ctx.textBaseline = 'middle'
+
+      const mouse = mouseRef.current
+      const particles = particlesRef.current
+
+      particles.forEach((p) => {
+        let tx = p.targetX
+        let ty = p.targetY
+
+        if (mouse) {
+          const dx = p.currentX - mouse.x
+          const dy = p.currentY - mouse.y
+          const dist = Math.sqrt(dx * dx + dy * dy)
+          const pushRadius = 40
+
+          if (dist < pushRadius) {
+            const force = (pushRadius - dist) / pushRadius
+            const angle = Math.atan2(dy, dx)
+            const pushDist = 35 * force
+            tx = p.targetX + Math.cos(angle) * pushDist
+            ty = p.targetY + Math.sin(angle) * pushDist
+          }
+        }
+
+        // Spring Physics: Easing return back to origin
+        p.vx += (tx - p.currentX) * 0.12
+        p.vy += (ty - p.currentY) * 0.12
+        p.vx *= 0.8
+        p.vy *= 0.8
+        p.currentX += p.vx
+        p.currentY += p.vy
+
+        ctx.fillStyle = p.color
+        ctx.fillText(p.char, p.currentX, p.currentY)
+      })
+
+      animId = requestAnimationFrame(render)
+    }
+
+    render()
+
+    return () => cancelAnimationFrame(animId)
+  }, [loaded])
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const rect = canvas.getBoundingClientRect()
+    mouseRef.current = {
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+    }
+  }
+
+  const handleMouseLeave = () => {
+    mouseRef.current = null
+  }
+
+  return (
+    <div className="w-48 h-60 bg-slate-100 dark:bg-zinc-950 rounded-lg border-2 border-slate-200 dark:border-zinc-800 shadow-sm overflow-hidden flex items-center justify-center relative cursor-cell transition-colors duration-300">
+      {!loaded && (
+        <div className="text-slate-400 dark:text-zinc-550 font-mono text-[9px] animate-pulse">
+          ASCIFYING HEADSHOT...
+        </div>
+      )}
+      <canvas
+        ref={canvasRef}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        className="block"
+      />
+    </div>
+  )
+}
 
 export default function App() {
   const [activeSection, setActiveSection] = useState('hero')
@@ -286,15 +463,11 @@ export default function App() {
             {/* Top row: Photo and Details Split Grid */}
             <div className="flex flex-col md:flex-row items-center md:items-start gap-8 border-b border-slate-100 dark:border-zinc-800 pb-6">
               
-              {/* Photo Column with Custom Geological Scale Styling */}
+              {/* Photo Column: Interactive ASCII Art Portrait */}
               <div className="shrink-0 relative">
-                <img
-                  src="/profile.png"
-                  alt="Wicus Olivier"
-                  className="w-48 h-60 object-cover rounded-lg border-2 border-slate-200 dark:border-zinc-800 shadow-sm"
-                />
+                <AsciiPortrait />
                 {/* Scale Bar Decorator */}
-                <div className="mt-2.5 font-mono text-[9px] text-slate-400 dark:text-zinc-500 text-center flex justify-between px-1">
+                <div className="mt-2.5 font-mono text-[9px] text-slate-400 dark:text-zinc-550 text-center flex justify-between px-1">
                   <span>0 mm</span>
                   <span className="border-b border-slate-300 dark:border-zinc-700 flex-1 mx-2.5 relative top-1.5 border-dashed" />
                   <span>150 mm</span>
@@ -307,7 +480,7 @@ export default function App() {
                   <span className="text-[10px] font-mono font-bold text-[#1E3A8A] dark:text-blue-400 uppercase tracking-widest block">
                     CANDIDATE DOSSIER
                   </span>
-                  <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-950 dark:text-zinc-550 tracking-tight leading-tight">
+                  <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-950 dark:text-zinc-50 tracking-tight leading-tight">
                     Jacobus Lodewicus (Wicus) Olivier
                   </h1>
                   <h2 className="text-base sm:text-lg font-bold text-slate-600 dark:text-zinc-300 font-mono">
@@ -338,11 +511,11 @@ export default function App() {
                     <span>None</span>
                   </div>
                   <div>
-                    <span className="text-slate-400 dark:text-zinc-550 font-bold mr-1">ID NUMBER:</span>
+                    <span className="text-slate-400 dark:text-zinc-555 font-bold mr-1">ID NUMBER:</span>
                     <span>Available upon request</span>
                   </div>
                   <div>
-                    <span className="text-slate-400 dark:text-zinc-550 font-bold mr-1">GRADUATION:</span>
+                    <span className="text-slate-400 dark:text-zinc-555 font-bold mr-1">GRADUATION:</span>
                     <span>Nov 2027 (Expected)</span>
                   </div>
                 </div>
@@ -440,12 +613,12 @@ export default function App() {
                         </span>
                         <h3 className={`font-bold font-mono text-xs sm:text-sm leading-tight transition-colors ${
                           isActive 
-                            ? 'text-slate-950 dark:text-zinc-50 font-extrabold' 
+                            ? 'text-slate-950 dark:text-zinc-550 font-extrabold' 
                             : 'text-slate-700 dark:text-zinc-300'
                         }`}>
                           {event.title}
                         </h3>
-                        <p className="text-[10px] font-mono text-slate-400 dark:text-zinc-500 font-bold whitespace-nowrap">
+                        <p className="text-[10px] font-mono text-slate-400 dark:text-zinc-550 font-bold whitespace-nowrap">
                           {event.period}
                         </p>
                       </div>
@@ -460,7 +633,7 @@ export default function App() {
               
               <div className="space-y-5">
                 <div className="border-b border-slate-100 dark:border-zinc-800 pb-3">
-                  <span className="inline-block text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-100 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 text-slate-500 dark:text-zinc-400 mb-1.5">
+                  <span className="inline-block text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-100 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 text-slate-500 dark:text-slate-400 mb-1.5">
                     {timelineData[activeTimelineIdx].category === 'experience' ? 'WORK PRACTICE' : 'ACADEMICS'}
                   </span>
                   <h3 className="text-xl font-extrabold text-slate-900 dark:text-zinc-100 font-mono leading-snug">
@@ -501,7 +674,7 @@ export default function App() {
           <span className="text-xs font-mono font-bold text-[#1E3A8A] dark:text-blue-400 uppercase tracking-wider">
             02. Technical Toolkit
           </span>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950 dark:text-zinc-50">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950 dark:text-zinc-550">
             Skills & Coursework Hub
           </h2>
           <p className="text-slate-500 dark:text-zinc-400 text-sm max-w-lg mt-1 font-mono">
@@ -560,7 +733,7 @@ export default function App() {
           <span className="text-xs font-mono font-bold text-[#1E3A8A] dark:text-blue-400 uppercase tracking-wider">
             03. Endorsements
           </span>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950 dark:text-zinc-50">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950 dark:text-zinc-550">
             Verified Professional References
           </h2>
           <p className="text-slate-500 dark:text-zinc-400 text-sm max-w-lg mt-1 font-mono">
@@ -635,7 +808,7 @@ export default function App() {
             ))}
           </div>
         </div>
-        <div className="mt-8 text-[10px] text-slate-400 dark:text-zinc-500">
+        <div className="mt-8 text-[10px] text-slate-400 dark:text-zinc-550 font-mono">
           © {new Date().getFullYear()} Wicus Olivier. Constructed with React, TS, and Tailwind CSS v4.
         </div>
       </footer>
